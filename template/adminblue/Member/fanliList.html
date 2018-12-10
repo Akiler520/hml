@@ -1,0 +1,267 @@
+{extend name="adminblue/base" /}
+{block name="resources"/}
+<link rel="stylesheet" type="text/css" href="ADMIN_CSS/member_list.css" />
+<script type="text/javascript" src="__STATIC__/My97DatePicker/WdatePicker.js"></script>
+<style>
+.head-portrait{
+	margin-top:15px;
+}
+.mytable th {
+    padding-left: 0px;
+}
+.btn-common-white{
+	line-height:20px;
+}
+.member-div label{
+	font-size:12px;
+}
+</style>
+{/block}
+{block name="main"}
+
+<table class="mytable">
+
+	<tr>
+		<th style="text-align: left;width: 20%;">
+
+			<button class="btn-common" onclick="shengcheng_all()" >生成返利数据</button>
+			<button class="btn-common" onclick="yjfl()" >一键返利</button>
+		</th>
+		<th style="width:50%;">
+			<span>订单时间：</span>
+			<input type="text" id="startDate" class="input-common middle" placeholder="请选择开始日期" onclick="WdatePicker()" />
+			&nbsp;-&nbsp;
+			<input type="text" id="endDate" placeholder="请选择结束日期" class="input-common middle" onclick="WdatePicker()" />
+			<!-- 更多搜索按钮 -->
+			<button class="btn-common-white more-search"><i class="fa fa-chevron-down"></i></button>
+			<button onclick="searchData()" value="搜索" class="btn-common" >搜索</button>
+
+		</th>
+	</tr>
+
+</table>
+
+<table class="table-class" >
+	<colgroup>
+	<col style="width: 2%;">
+	<col style="width: 25%;">
+	<col style="width: 7%;">
+	<col style="width: 10%;">
+	<col style="width: 10%;">
+	<col style="width: 20%;">
+	<col style="width: 6%;">
+	<col style="width: 20%;">
+	</colgroup>
+	<thead>
+		<tr align="center">
+			<th><i class="checkbox-common"><input type="checkbox" onclick="CheckAll(this)"></i></th>
+			<th style="text-align:left;">用户名称</th>
+			<th style="text-align:left;">消费金额</th>
+			<th style="text-align:right;">上级用户</th>
+			<th >返利金额</th>
+			<th>操作</th>
+		</tr>
+	</thead>
+	<tbody id="productTbody"></tbody>
+
+</table>
+
+
+
+
+{/block}
+{block name="script"}
+<script type="text/javascript">
+function LoadingInfo() {
+
+	var start_date = $("#startDate").val();
+	var end_date = $("#endDate").val();
+
+	$.ajax({
+		type : "post",
+		url : "{:__URL('ADMIN_MAIN/member/fanlilist')}",
+		data : {
+			 "start_date" : start_date, "end_date" : end_date
+		},
+		success : function(data) {
+			if (data.length > 0) {
+				$(".table-class tbody").empty();
+				for (var i = 0; i < data.length; i++) {
+					var html = '';
+
+                    html += '<tr align="center">';
+                    html += '<td><i class="checkbox-common"><input name="user_id" type="checkbox" value="'+ data[i]["user_id"]+'"></i></td>';
+                    html += '<td align="left">' + data[i]["nick_name"] + '</td>';
+                    html += '<td style="text-align:right;">'+'¥'+ data[i]["order_money"] +'</td>';
+                    html += '<td style="text-align:right;">'+ data[i]["parent_name"] +'</td>';
+                    html += '<td style="text-align:center;">'+'¥'+ data[i]["fanli_money"] +'</td>';
+                    html += '<td>';
+                    html += '<a onclick="shengcheng(this)">生成返利数据</a>';
+                    html += '<input type="hidden" name="user_id" value="'+data[i]["user_id"]+'">';
+                    html += '</td>';
+                    html += '</tr>';
+                    $(".table-class tbody").append(html);
+				}
+			} else {
+				var html = '<tr align="center"><td colspan="6">暂无符合条件的数据记录</td></tr>';
+				$(".table-class tbody").html(html);
+			}
+
+		}
+	});
+}
+	
+//全选
+function CheckAll(event){
+	var checked = event.checked;
+	$("#productTbody input[type = 'checkbox']").prop("checked",checked);
+	if(checked) $(".table-class tbody input[type = 'checkbox']").parent().addClass("selected");
+	else $(".table-class tbody input[type = 'checkbox']").parent().removeClass("selected");
+}
+
+
+//搜索
+function searchData(){
+	$(".more-search-container").slideUp();
+    LoadingInfo();
+}
+
+
+//生成数据
+function shengcheng(obj){
+    var start_date = $("#startDate").val();
+    var end_date = $("#endDate").val();
+    var user_id = $(obj).next().val();
+
+	$.ajax({
+		type : "post",
+		url : "{:__URL('ADMIN_MAIN/member/shengcheng')}",
+		data : {
+			"user_id" : user_id,
+			'end_date' : end_date,
+			'start_date' : start_date
+		},
+		success : function(data) {
+            $( "#dialog" ).dialog({
+                buttons: {
+                    "确定,#0059d6,#fff": function() {
+                        $(this).dialog('close');
+                    }
+                },
+                contentText:"生成数据成功",
+                title:"消息提醒",
+            });
+
+
+
+		}
+	});
+}
+
+
+//批量生成数据
+function shengcheng_all() {
+	var uid= '';
+	$("#productTbody input[type='checkbox']:checked").each(function() {
+		/*if (!isNaN($(this).val())) {
+			uid.push($(this).val());
+		}*/
+        uid += ','+$(this).val();
+	});
+	if(uid.length ==0){
+		$( "#dialog" ).dialog({
+			buttons: {
+				"确定,#0059d6,#fff": function() {
+					$(this).dialog('close');
+				}
+			},
+			contentText:"请选择需要操作的记录",
+			title:"消息提醒",
+		});
+		return false;
+	}
+
+   add_all(uid);
+}
+
+function add_all(user_id) {
+
+    var start_date = $("#startDate").val();
+    var end_date = $("#endDate").val();
+
+    var data = { "uid" : user_id,'end_date' : end_date,'start_date' : start_date};
+    $.ajax({
+        type : "post",
+        url : "{:__URL('ADMIN_MAIN/member/yjsc')}",
+        data : data,
+        success : function(data) {
+            $( "#dialog" ).dialog({
+                buttons: {
+                    "确定,#0059d6,#fff": function() {
+                        $(this).dialog('close');
+                    }
+                },
+                contentText:"生成数据成功",
+                title:"消息提醒",
+            });
+
+        }
+    });
+}
+
+function yjfl() {
+    var start_date = $("#startDate").val();
+    var end_date = $("#endDate").val();
+
+    var data = {'end_date' : end_date,'start_date' : start_date};
+    $.ajax({
+        type : "post",
+        url : "{:__URL('ADMIN_MAIN/member/yjfl')}",
+        data : data,
+        success : function(data) {
+            if(data=="error"){
+                $( "#dialog" ).dialog({
+                    buttons: {
+                        "确定,#0059d6,#fff": function() {
+                            $(this).dialog('close');
+                        }
+                    },
+                    contentText:"没有返利的数据了",
+                    title:"消息提醒",
+                });
+			}
+			else{
+                $( "#dialog" ).dialog({
+                    buttons: {
+                        "确定,#0059d6,#fff": function() {
+                            $(this).dialog('close');
+                        }
+                    },
+                    contentText:"返利成功",
+                    title:"消息提醒",
+                });
+			}
+
+        }
+    });
+}
+
+
+
+
+
+// 点击显示更多搜索
+$(".more-search").on("click", function(e){
+	$(".more-search-container").slideToggle();
+	$(document).one("click", function(){
+        $(".more-search-container").slideUp();
+    });
+    e.stopPropagation();
+});
+
+$(".more-search-container").on("click", function(e){
+    e.stopPropagation();
+});
+
+</script>
+{/block}

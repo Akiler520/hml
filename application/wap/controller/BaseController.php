@@ -73,7 +73,7 @@ class BaseController extends Controller
     public function __construct()
     {
 
-        if (strpos($_SERVER['HTTP_USER_AGENT'],'MicroMessenger') !== false) {
+       /* if (strpos($_SERVER['HTTP_USER_AGENT'],'MicroMessenger') !== false) {
             Cookie::delete("default_client"); // 还原手机端访问
             $this->app_login_name = request()->get('login_name', '');
             $this->app_login_password = request()->get('login_password', '');
@@ -94,7 +94,7 @@ class BaseController extends Controller
             echo "<script language=JavaScript> window.location.href='https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxe82a34e8331502f1&redirect_uri=shangcheng.51kydm.com&response_type=code&scope=SCOPE#wechat_redirect'</script>";
             exit();
 
-        }
+        }*/
 
 
 
@@ -102,7 +102,7 @@ class BaseController extends Controller
 
 
 
-       /* Cookie::delete("default_client"); // 还原手机端访问
+        Cookie::delete("default_client"); // 还原手机端访问
         $this->app_login_name = request()->get('login_name', '');
         $this->app_login_password = request()->get('login_password', '');
         if (! empty($this->app_login_name) && ! empty($this->app_login_password)) {
@@ -112,7 +112,7 @@ class BaseController extends Controller
 
         // getWapCache();//开启缓存
         parent::__construct();
-        $this->initInfo();*/
+        $this->initInfo();
 
 
     }

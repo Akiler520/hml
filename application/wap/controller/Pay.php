@@ -60,7 +60,7 @@ class Pay extends Controller
         if (! checkTemplateIsExists("wap", $use_wap_template['value'])) {
             $this->error("模板配置有误，请联系商城管理员");
         }
-        
+
         $this->style = "wap/" . $use_wap_template['value'] . "/";
         $this->assign("style", "wap/" . $use_wap_template['value']);
         $seoConfig = $config->getSeoConfig(0);
@@ -99,7 +99,7 @@ class Pay extends Controller
         if (empty($out_trade_no)) {
             $this->error("没有获取到支付信息");
         }
-        
+
         $pay = new UnifyPay();
         $pay_config = $pay->getPayConfig();
         $this->assign("pay_config", $pay_config);
@@ -128,15 +128,17 @@ class Pay extends Controller
             $this->error("订单已关闭");
         } else {
             $this->assign('pay_value', $pay_value);
-            if (request()->isMobile()) {
+
+            if (request()->isMobile() && strpos($_SERVER['HTTP_USER_AGENT'],'MicroMessenger') !== false) {
             	$this->user = new Member();
             	$this->shop_name = $this->user->getInstanceName();
             	$this->assign("platform_shopname", $this->shop_name); // 平台店铺名称
-                return view($this->style . 'Pay/getPayValue'); // 手机端
+                return view($this->style . 'Pay/getPayValue'); // 微信手机端
             } else {
-               // return view($this->style . 'Pay/pcOptionPaymentMethod'); // PC端
 
-                return view($this->style . 'Pay/getPayValue');
+                return view($this->style . 'Pay/pcOptionPaymentMethod'); // PC端、手机web端
+
+//                return view($this->style . 'Pay/getPayValue');
             }
         }
     }

@@ -1,7 +1,6 @@
 /vendor
 /.idea
 /runtime
-/template
 /thinkphp
 /upload
 Homestead.json

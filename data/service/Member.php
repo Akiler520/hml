@@ -70,7 +70,7 @@ class Member extends User implements IMember
      * 前台添加会员(non-PHPdoc)
      * @see \data\api\IMember::registerMember()
      */
-public function registerMember($user_name, $password, $email, $mobile, $user_qq_id, $qq_info, $wx_openid, $wx_info, $wx_unionid,$parent_id)
+public function registerMember($user_name, $password, $email, $mobile, $user_qq_id, $qq_info, $wx_openid, $wx_info, $wx_unionid,$parent_id=0)
     {
         // if (! empty($user_name)) {
         // if (! preg_match("/^(?!\d+$)[\da-zA-Z]*$/i", $user_name)) {
