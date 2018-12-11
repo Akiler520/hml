@@ -601,7 +601,17 @@ function echoSpecData(){
 		}
 	});
 	spec_array.sort();
-	$(".sku-array").each(function(i) {
+	// console.log(spec_array);
+	// console.log(JSON.stringify(spec_array));
+
+    var active = $("#submit_ok").attr("tag");
+    var skuArray = $(".sku-array");
+
+    if(active == "spelling"){
+    	skuArray = $(".sku-array-spelling");
+    }
+
+    skuArray.each(function(i) {
 		var sku_array =new Array();
 		var $this = $(this);
 		var value = $(this).val();
@@ -609,6 +619,8 @@ function echoSpecData(){
 			sku_array = value.split(";");
 		}
 		sku_array.sort();
+        // console.log(JSON.stringify(sku_array));
+
 		if(JSON.stringify(sku_array) == JSON.stringify(spec_array)){
 			select_skuid = $this.attr("skuid");
 			select_skuName = $this.attr("skuname");
@@ -644,7 +656,7 @@ function echoSpecData(){
 				$("#price").text("￥" + price);
 				$("#hiddSkuprice").val(price);
 			}else if(active == "spelling"){
-				price = $("#hidden_pintuan_price").val();
+				price = $this.attr("price");//$("#hidden_pintuan_price").val();
 				$("#price").text("￥" + price);
 				$("#hiddSkuprice").val(price);
 			}else if (active == "groupbuy") {

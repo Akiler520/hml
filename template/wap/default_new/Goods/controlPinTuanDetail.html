@@ -355,8 +355,9 @@ video::-webkit-media-controls-panel {width: calc(100% + 50px);}
 		{foreach name="goods_detail['sku_list']" item="pro_skus" key="k"}
 		{if condition="$tuangou_group_count==0"}
 		<input type="hidden" id="goods_sku{$k}" value="{$pro_skus.attr_value_items}" stock="{$pro_skus.stock}" {if condition="$pro_skus.promote_price < $pro_skus.member_price" }price="{$pro_skus.promote_price}" {else/}price="{$pro_skus.member_price}"{/if} promotion_price="{$pro_skus.promote_price}" member_price="{$pro_skus.member_price}" skuid="{$pro_skus.sku_id}" skuname="{$pro_skus.sku_name}" class="sku-array">
+		<input type="hidden" id="goods_sku_tuan{$k}" value="{$pro_skus.attr_value_items}" stock="{$pro_skus.stock}" price="{$pro_skus.pintuan_price}" promotion_price="{$pro_skus.pintuan_price}" member_price="{$pro_skus.pintuan_price}" skuid="{$pro_skus.sku_id}" skuname="{$pro_skus.sku_name}" class="sku-array-spelling">
 		{else/}
-		<input type="hidden" id="goods_sku{$k}" value="{$pro_skus.attr_value_items}" stock="{$pro_skus.stock}" price="{$goods_pintuan['tuangou_money']}" promotion_price="{$goods_pintuan['tuangou_money']}" member_price="{$goods_pintuan['tuangou_money']}" skuid="{$pro_skus.sku_id}" skuname="{$pro_skus.sku_name}" class="sku-array">
+		<input type="hidden" id="goods_sku{$k}" value="{$pro_skus.attr_value_items}" stock="{$pro_skus.stock}" price="{$pro_skus.pintuan_price}" promotion_price="{$pro_skus.pintuan_price}" member_price="{$pro_skus.pintuan_price}" skuid="{$pro_skus.sku_id}" skuname="{$pro_skus.sku_name}" class="sku-array">
 		{/if}
 		{/foreach}
 		<input type="hidden" id="goods_sku_num" value="100">
