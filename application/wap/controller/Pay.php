@@ -182,7 +182,7 @@ class Pay extends Controller
         
         if (! isWeixin()) {
             // 扫码支付
-            if (request()->isMobile()) {
+            if (request()->isMobile() && strpos($_SERVER['HTTP_USER_AGENT'],'MicroMessenger') !== false) {
                 $res = $pay->wchatPay($out_trade_no, 'MWEB', $red_url);
                 if (empty($res['mweb_url'])) {
                     $this->error($res['return_msg']);

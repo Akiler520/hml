@@ -403,8 +403,8 @@ class OrderPintuan extends Order
             $goods_sku = explode(':', $goods_sku_array);
             $goods_sku_info = $ns_goods_sku->getInfo([
                 'sku_id' => $goods_sku[0]
-            ], 'goods_id');
-            $price += $this->getGoodsPintuanPrice($goods_sku_info['goods_id'], $goods_sku[1], $tuangou_group_id);
+            ], 'pintuan_price');
+            $price += $goods_sku_info['pintuan_price'];//$this->getGoodsPintuanPrice($goods_sku_info['goods_id'], $goods_sku[1], $tuangou_group_id);
         }
         return $price;
     }
@@ -430,7 +430,7 @@ class OrderPintuan extends Order
                 $goods_sku_model = new NsGoodsSkuModel();
                 $goods_sku_info = $goods_sku_model->getInfo([
                     'sku_id' => $goods_sku[0]
-                ], 'sku_id,goods_id,cost_price,stock,sku_name,attr_value_items');
+                ], 'sku_id,goods_id,cost_price,pintuan_price,stock,sku_name,attr_value_items');
                 
                 // 如果当前商品有SKU图片，就用SKU图片。没有则用商品主图 2017年9月19日 15:46:38（王永杰）
                 $picture = $order_goods_service->getSkuPictureBySkuId($goods_sku_info);
@@ -441,7 +441,7 @@ class OrderPintuan extends Order
                 ], 'goods_name,price,goods_type,picture,promotion_type,promote_id,point_exchange_type,give_point');
                 
                 $goods_promote = new GoodsPreference();
-                $sku_price = $this->getGoodsPintuanPrice($goods_sku_info['goods_id'], 1, $tuangou_group_id);
+                $sku_price = $goods_sku_info['pintuan_price'];//$this->getGoodsPintuanPrice($goods_sku_info['goods_id'], 1, $tuangou_group_id);
                 $goods_promote_info = '';
                 if (empty($goods_promote_info)) {
                     $goods_info['promotion_type'] = 0;

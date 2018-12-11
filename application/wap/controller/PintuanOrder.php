@@ -106,7 +106,7 @@ class PintuanOrder extends Order
             $list[$k]['subtotal'] = sprintf("%.2f", $list[$k]['price'] * $list[$k]['num']);
             $count_money += $list[$k]['subtotal'];
         }
-        
+
         $this->assign("count_money", $count_money); // 商品金额
         
         $address = $member->getDefaultExpressAddress(); // 获取默认收货地址
@@ -216,7 +216,7 @@ class PintuanOrder extends Order
         $sku_info = $goods_sku->getInfo([
             'sku_id' => $sku_id
         ], '*');
-        
+
         // 查询当前商品是否有SKU主图
         $order_goods_service = new OrderGoods();
         $picture = $order_goods_service->getSkuPictureBySkuId($sku_info);
@@ -243,7 +243,7 @@ class PintuanOrder extends Order
         $goods_preference = new GoodsPreference();
         $member_price = $goods_preference->getGoodsSkuMemberPrice($sku_info['sku_id'], $this->uid);
         $goods_pintuan = $pintuan->getGoodsPintuanDetail($sku_info["goods_id"]);
-        $cart_list["price"] = $goods_pintuan['tuangou_money'];
+        $cart_list["price"] = $sku_info['pintuan_price'];
         
         $cart_list["goods_id"] = $goods_info["goods_id"];
         $cart_list["goods_name"] = $goods_info["goods_name"];
