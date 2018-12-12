@@ -2388,7 +2388,7 @@ class Config extends BaseService implements IConfig
      *
      * @param unknown $shop_id            
      */
-    public function getOrderExpressMessageConfig($shop_id)
+    public function getOrderExpressMessageConfig($shop_id, $type = 0)
     {
         $express_detail = $this->config_module->getInfo([
             'instance_id' => $shop_id,
@@ -2405,9 +2405,36 @@ class Config extends BaseService implements IConfig
                 'is_use' => 0
             );
         } else {
-            $express_detail['value'] = json_decode($express_detail['value'], true);
+            $expressData = json_decode($express_detail['value'], true);
+            $expressDefault = array();
+            $expressByType = array();
+
+            foreach ($expressData as $expressDatum) {
+                if ($type == $expressDatum['type']) {
+                    $expressByType = $expressDatum;
+                }
+
+                if ($expressDatum['is_default'] == 1) {
+                    $expressDefault = $expressDatum;
+                }
+            }
+
+            $express_detail = ($type > 0 && !empty($expressByType)) ? $expressByType : $expressDefault;
+
             return $express_detail;
         }
+    }
+
+    public function getOrderExpressMessageConfigAll($shop_id)
+    {
+        $express_detail = $this->config_module->getInfo([
+            'instance_id' => $shop_id,
+            'key' => 'ORDER_EXPRESS_MESSAGE'
+        ], 'value,is_use');
+
+        $expressData = json_decode($express_detail['value'], true);
+
+        return $expressData;
     }
 
     /**
@@ -2429,15 +2456,17 @@ class Config extends BaseService implements IConfig
             "appid" => trim($appid),
             "appkey" => trim($appkey),
             "back_url" => $back_url,
-            "customer" => $customer
+            "customer" => $customer,
+            'is_default' => 1
         );
-        $value = json_encode($value);
+
         $config_model = new ConfigModel();
+
         if (empty($express_detail)) {
             $data = array(
                 "instance_id" => $shop_id,
                 "key" => 'ORDER_EXPRESS_MESSAGE',
-                "value" => $value,
+                "value" => json_encode([$value]),
                 "create_time" => time(),
                 "modify_time" => time(),
                 "desc" => "物流跟踪配置信息",
@@ -2446,9 +2475,25 @@ class Config extends BaseService implements IConfig
             $config_model->save($data);
             return $config_model->id;
         } else {
+            $expressData = json_decode($express_detail['value'], true);
+            $exist = false;
+
+            foreach ($expressData as &$expressDatum) {
+                if ($expressDatum['type'] == $type) {
+                    $exist = true;
+                    $expressDatum = $value;
+                } else {
+                    $expressDatum['is_default'] = 0;
+                }
+            }
+
+            if (!$exist) {
+                array_push($expressData, $value);
+            }
+
             $data = array(
                 "key" => 'ORDER_EXPRESS_MESSAGE',
-                "value" => $value,
+                "value" => json_encode($expressData),
                 "modify_time" => time(),
                 "is_use" => $is_use
             );
@@ -2456,6 +2501,7 @@ class Config extends BaseService implements IConfig
                 "instance_id" => $shop_id,
                 "key" => "ORDER_EXPRESS_MESSAGE"
             ]);
+
             return $result;
         }
     }

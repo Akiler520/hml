@@ -2245,7 +2245,10 @@ class Config extends BaseController
         } else {
             $shop_id = $this->instance_id;
             $expressMessageConfig = $config_service->getOrderExpressMessageConfig($shop_id);
+            $expressMessageConfigAll = $config_service->getOrderExpressMessageConfigAll($shop_id);
+
             $this->assign('emconfig', $expressMessageConfig);
+            $this->assign('emconfig_all', json_encode($expressMessageConfigAll));
             return view($this->style . "Config/expressMessage");
         }
     }

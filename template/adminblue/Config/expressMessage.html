@@ -29,7 +29,7 @@
 					<dd>
 						<select name="" id="type" class="select-common">
 							<option value="1" {if $emconfig.value.type eq 1}selected{/if}>快递鸟</option>
-							<option value="2" {if $emconfig.value.type eq 2}selected{/if}>快递100（免费版）</option>
+							<!--<option value="2" {if $emconfig.value.type eq 2}selected{/if}>快递100（免费版）</option>-->
 							<option value="3" {if $emconfig.value.type eq 3}selected{/if}>快递100（企业版）</option>
 						</select>
 					</dd>
@@ -82,6 +82,9 @@
 </div>
 
 <script>
+var emconfig_all = '{$emconfig_all}';
+emconfig_all = eval('('+emconfig_all+')');
+
 $("#type").change(function(){
 	if($(this).val() == 2){
 		$("#Js-appid,#Js-customer").hide();
@@ -95,7 +98,24 @@ $("#type").change(function(){
 		$("#Js-customer").hide();
 		$("#apply_address").attr("href","http://www.kdniao.com/");
 	}
-})
+
+
+    var expressConfig = getExpressByType($(this).val());
+    $("#appid").val(expressConfig.appid);
+    $("#appkey").val(expressConfig.appkey);
+    $("#customer").val(expressConfig.customer);
+});
+
+function getExpressByType(type) {
+	for (var key in emconfig_all) {
+	    if(emconfig_all[key].type == type){
+	        return emconfig_all[key];
+		}
+	}
+
+	return emconfig_all[0];
+}
+
 function setExpressConfigAjax(){
 	var type = $("#type").val();
 	var appid = type == 1 ? $('#appid').val() : "";

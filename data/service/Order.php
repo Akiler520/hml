@@ -2662,7 +2662,7 @@ class Order extends BaseService implements IOrder
         } catch (\Exception $e) {
             return array(
                 "Success" => false,
-                "Reason" => "订单物流信息有误!"
+                "Reason" => "订单物流信息有误! [{$e->getCode()}]{$e->getMessage()}"
             );
         }
     }

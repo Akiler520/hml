@@ -72,7 +72,12 @@ class Kdniao{
         $httpheader.= "Content-Length:" . strlen($post_data) . "\r\n";
         $httpheader.= "Connection:close\r\n\r\n";
         $httpheader.= $post_data;
-        $fd = fsockopen($url_info['host'], $url_info['port']);
+
+        $errno = null;
+        $errstr = null;
+
+        $fd = fsockopen($url_info['host'], $url_info['port'], $errno, $errstr, 15);
+
         fwrite($fd, $httpheader);
         $gets = "";
         $headerFlag = true;
