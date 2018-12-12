@@ -16,7 +16,7 @@ class Kdniao{
      */
     public function __construct($shop_id){
         $config=new Config();
-        $express_config=$config->getOrderExpressMessageConfig($shop_id);
+        $express_config=$config->getOrderExpressMessageConfig($shop_id, 1);
         $is_use=$express_config['is_use'];
         if($is_use==0){
             $this->ebusinessid = 'niushop';

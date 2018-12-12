@@ -11,7 +11,7 @@ class Kd100
     
     public function __construct($shop_id){
         $config = new Config();
-        $express_config = $config -> getOrderExpressMessageConfig($shop_id);
+        $express_config = $config -> getOrderExpressMessageConfig($shop_id, 3);
         if($express_config["is_use"]){
             $this->key = $express_config["value"]["appkey"];
             $this->customer = $express_config["value"]["customer"];

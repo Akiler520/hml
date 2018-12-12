@@ -2419,7 +2419,7 @@ class Config extends BaseService implements IConfig
                 }
             }
 
-            $express_detail = ($type > 0 && !empty($expressByType)) ? $expressByType : $expressDefault;
+            $express_detail['value'] = ($type > 0 && !empty($expressByType)) ? $expressByType : $expressDefault;
 
             return $express_detail;
         }

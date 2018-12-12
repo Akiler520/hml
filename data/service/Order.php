@@ -2571,7 +2571,7 @@ class Order extends BaseService implements IOrder
      *
      * @param unknown $order_goods_id            
      */
-    public function getOrderGoodsExpressMessage($express_id)
+    public function getOrderGoodsExpressMessage($express_id, $type = 0)
     {
         try {
             $order_express_model = new NsOrderGoodsExpressModel();
@@ -2618,7 +2618,11 @@ class Order extends BaseService implements IOrder
                 
                 // 快递接口配置
                 $config = new Config();
-                $express_config = $config->getOrderExpressMessageConfig($shop_id);
+                $express_config = $config->getOrderExpressMessageConfig($shop_id, $type);
+
+                $_SERVER['_config_express'] = $express_config['value'];
+                $_SERVER['_config_express_id'] = $express_id;
+
                 if($express_config["is_use"] == 0){
                     return array(
                         "Success" => false,
@@ -2626,6 +2630,7 @@ class Order extends BaseService implements IOrder
                     );
                 }else{
                     $result = $this->getThirdPartyExpressMessage($express_config["value"], $shop_id, $order_no, $express_no, $send_no);
+
                     if($result["Success"]){
                         if($express_config["value"]["type"] == 1){
                             foreach ($result["Traces"] as $val){
@@ -2650,6 +2655,12 @@ class Order extends BaseService implements IOrder
                             "Traces" => array_reverse($retval)
                         );
                     }else{
+                        // 如果出错，则重新选择其他快递查询接口
+                        if (isset($_SERVER['_config_express']) && $_SERVER['_config_express']["is_default"] == 1) {
+                            $newType = ($_SERVER['_config_express']['type'] == 1) ? 3 : 1;
+                            $result = $this->getOrderGoodsExpressMessage($express_id, $newType);
+                        }
+
                         return $result;
                     }
                 }
@@ -2660,10 +2671,19 @@ class Order extends BaseService implements IOrder
                 );
             }
         } catch (\Exception $e) {
-            return array(
-                "Success" => false,
-                "Reason" => "订单物流信息有误! [{$e->getCode()}]{$e->getMessage()}"
-            );
+            // 如果出错，则重新选择其他快递查询接口
+            if (isset($_SERVER['_config_express']) && $_SERVER['_config_express']["is_default"] == 1) {
+                $newType = ($_SERVER['_config_express']['type'] == 1) ? 3 : 1;
+                $result = $this->getOrderGoodsExpressMessage($_SERVER['_config_express_id'], $newType);
+
+                return $result;
+            } else {
+                return array(
+                    "Success" => false,
+                    "Reason" => "订单物流信息有误! [{$e->getCode()}]{$e->getMessage()}"
+                );
+            }
+
         }
     }
     
