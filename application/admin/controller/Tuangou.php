@@ -15,10 +15,12 @@
  */
 namespace app\admin\controller;
 
+use data\model\NsGoodsSkuModel;
 use data\service\Pintuan;
 use data\service\Order\OrderStatus;
 use data\service\Express;
 use think\Cache;
+use think\Exception;
 
 /**
  * 团购
@@ -265,7 +267,8 @@ class Tuangou extends BaseController
             $colonel_point = request()->post('colonel_point', 0);
             $remark = request()->post('remark', '');
             $colonel_content = request()->post('colonel_content', '');
-            
+            $sku_list = request()->post('sku_list');
+
             // 转化拼团设置
             $tuangou_array = array(
                 "colonel_commission" => $colonel_commission,
@@ -279,6 +282,37 @@ class Tuangou extends BaseController
             }
             $pintuan = new Pintuan();
             $res = $pintuan->addUpdateGoodsPintuan($tuangou_id, $goods_id, $is_open, $is_show, $tuangou_money, $tuangou_num, $tuangou_time, $tuangou_type, $tuangou_content_json, $remark);
+
+            // 更新sku的拼团价格
+            if ($res) {
+                $goods_spec = new NsGoodsSkuModel();
+                $goods_spec->startTrans();
+                try {
+                    $sku_list = json_decode($sku_list, true);
+
+                    foreach ($sku_list as $sku) {
+                        $data = array(
+                            'pintuan_price' => $sku['pintuan_price'],
+                        );
+
+                        $res = $goods_spec->save($data, [
+                            'sku_id' => $sku['sku_id']
+                        ]);
+
+                        if (!$res) {
+                            throw new Exception("Sku 价格更新失败，请检测");
+                        }
+                    }
+
+                    $goods_spec->commit();
+
+                    return AjaxReturn($res);
+                } catch (\Exception $e) {
+                    $goods_spec->rollback();
+                    return AjaxReturn($e->getCode());
+                }
+            }
+
             return AjaxReturn($res);
         }
     }

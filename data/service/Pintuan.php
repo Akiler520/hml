@@ -95,6 +95,13 @@ class Pintuan extends Order
         if (! empty($tuangou_info)) {
             $tuangou_info["tuangou_type_info"] = $this->getPintuanType($tuangou_info["tuangou_type"]);
         }
+
+        // 获取商品sku信息
+        $goods_sku = new NsGoodsSkuModel();
+        $tuangou_info['sku_list'] = $goods_sku->where([
+            'goods_id' => $goods_id
+        ])->select();
+
         return $tuangou_info;
     }
 

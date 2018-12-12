@@ -174,7 +174,7 @@ input, textarea, .uneditable-input {width: 147px;}
 						</dd>
 					</dl>
 					<dl>
-						<dt>团购金额:</dt>
+						<dt>团购金额(显示):</dt>
 						<dd>
 							<p><input id="tuangou_money" type="number" min="0" placeholder="" value="" class="input-common harf" /><em class="unit">元</em><span class="error">&nbsp;&nbsp;请输入团购金额</span></p>
 						</dd>
@@ -229,6 +229,15 @@ input, textarea, .uneditable-input {width: 147px;}
 							<p>
 								<textarea name="" id="colonel_content" cols="30" rows="10" class="textarea-common"></textarea>
 							<p class="error">请输入团购信息内容</p>
+						</dd>
+					</dl>
+					<dl>
+						<dt>sku价格设置:</dt>
+						<dd>
+							<br>
+							<p id="sku_list">
+
+							</p>
 						</dd>
 					</dl>
 					<input id="goods_id" type="hidden" value="" >
@@ -449,6 +458,19 @@ function showUpdateGoodsPintuan(condition){
 			$('#colonel_coupon').val(tuangou_content_obj.colonel_coupon);
 			$("#colonel_point").val(tuangou_content_obj.colonel_point);
 			$("#colonel_content").val(tuangou_content_obj.colonel_content);
+
+			// 初始化sku数据
+			var skuHtml = '';
+
+            $("#sku_list").html(skuHtml);
+
+			for (var key in data.sku_list) {
+			    var skuID = data.sku_list[key].sku_id;
+			    var tuanPrice = data.sku_list[key].pintuan_price;
+			    var skuName = data.sku_list[key].sku_name;
+			    skuHtml = '<p><span>'+skuName+'</span> : <input name="sku_'+skuID+'" sku_id="'+skuID+'" type="number" min="0" placeholder="" value="'+tuanPrice+'" class="input-common harf" /><em class="unit">元</em></p>';
+			    $("#sku_list").append(skuHtml);
+			}
 		}
 	})
 	$("#editGroup").popover("hide");
@@ -472,6 +494,17 @@ function updateGoodsPintuan(){
 	var colonel_content = $("#colonel_content").val();
 	var goods_id = $("#goods_id").val();
 	var tuangou_id = $("#tuangou_id").val();
+
+	var sku_list = [];
+
+    $("#sku_list input").each(function () {
+		var skuData = {
+		    "sku_id": $(this).attr("sku_id"),
+			"pintuan_price": $(this).val()
+		};
+
+		sku_list.push(skuData);
+    });
 	$.ajax({
 		type:"post",
 		url:"{:__URL('ADMIN_MAIN/Tuangou/updateGoodsPintuan')}",
@@ -487,7 +520,8 @@ function updateGoodsPintuan(){
 			'colonel_commission':colonel_commission,
 			'colonel_coupon':colonel_coupon,
 			'colonel_point':colonel_point,
-			'colonel_content' : colonel_content
+			'colonel_content' : colonel_content,
+			'sku_list': JSON.stringify(sku_list)
 		},
 		success:function (data) {
 			$("#editGoodsCommissionRate").modal("hide");
