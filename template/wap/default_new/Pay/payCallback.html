@@ -33,6 +33,11 @@ article button{
 	margin:15px 0;
 }
 .other-view{max-width: 90%;width:90%;margin-top:30px;}
+
+
+.share_img{position:fixed;top:0;right:0;z-index:99999;display:none;background:#000;opacity:0.8;filter:alpha(opacity=80);width:100%;height:100%;text-align:right;}
+.share_img p{color:#fff;line-height:30px;font-size:16px;}
+
 </style>
 </head>
 <body>
@@ -62,9 +67,19 @@ article button{
 	<input type="hidden" name="goods_id" id="goods_id" value="{$goods_id}">
 	<button style="width:40%;" onclick="shareGoods()">分享</button>
 	<button  style="width:40%;" onclick="enterOrderList()">{:lang('access_member_center')}</button>
+
+
+	<!-- 分享弹框 -->
+	<div id="share_img" class="share_img">
+		<p><img class="arrow" src="__TEMP__/{$style}/public/images/goods_share.png"></p>
+		<p style="margin-top:30px; margin-right:50px;">点击右上角</p>
+		<p style="margin-right:50px;">将此商品分享给好友</p>
+	</div>
+
 {/if}
 </article>
 <script>
+	var orderStatus = '{$status}';
 $(document).ready(function(e) {
 	var counter = 0;
 	if (window.history && window.history.pushState) {
@@ -82,6 +97,8 @@ $(document).ready(function(e) {
 	}
 	window.history.pushState('forward', null, '#'); //在IE中必须得有这两行
 	window.history.forward(1);
+
+	if (orderStatus == 1) $("#share_img").show();
 });
 function enterOrderList(){
 	if($(window).width()<768){
@@ -94,18 +111,20 @@ function enterOrderList(){
 }
 
 function shareGoods() {
-	var  goods_id = $("#goods_id").val();
+    $("#share_img").show();
 
-
-    //分享
-    $.ajax({
-        type:"get",
-        data : { goods_id : goods_id},
-        url : "{:__URL('APP_MAIN/pay/send')}",
-        success : function(data){
-			alert(data)
-        }
-    });
+    // var  goods_id = $("#goods_id").val();
+    //
+    //
+    // //分享
+    // $.ajax({
+    //     type:"get",
+    //     data : { goods_id : goods_id},
+    //     url : "{:__URL('APP_MAIN/pay/send')}",
+    //     success : function(data){
+		// 	alert(data)
+    //     }
+    // });
 
 }
 </script>
