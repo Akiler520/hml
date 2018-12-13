@@ -11,7 +11,7 @@
 <table class="mytable">
 	<tr>
 		<th width="20%" style="text-align: left;">
-			<button class="btn-common btn-small" onclick="location.href='{:__URL('ADMIN_MAIN/promotion/adddiscount')}';" style="margin:0 5px 0 0 !important;">添加一分抽奖</button>
+			<button class="btn-common btn-small" onclick="location.href='{:__URL('ADMIN_MAIN/promotion/addyifen')}';" style="margin:0 5px 0 0 !important;">添加一分抽奖</button>
 			<button class="btn-common-delete btn-small" onclick="batchDelete()" style="margin:0 5px 0 0 !important;">批量删除</button>
 		</th>
 		<th width="10%">
@@ -84,7 +84,7 @@ function LoadingInfo(page_index) {
 	var status = {$status};
 	$.ajax({
 		type : "post",
-		url : "{:__URL('ADMIN_MAIN/promotion/getdiscountlist')}",
+		url : "{:__URL('ADMIN_MAIN/promotion/getyifenlist')}",
 		data : {
 			"page_index" : page_index, "page_size" : $("#showNumber").val(), "search_text" : search_text,"status" : status
 		},
@@ -120,7 +120,7 @@ function LoadingInfo(page_index) {
 					html += '<td>开始时间：' + timeStampTurnTime(data["data"][i]["start_time"]) + '<br/>结束时间：' + timeStampTurnTime(data["data"][i]["end_time"]) + '</td>';
 					html += '<td>';
 					if(data['data'][i]['status'] != 1){
-						html += '<a href="'+__URL('ADMIN_MAIN/promotion/updatediscount?discount_id=' + data["data"][i]["discount_id"])+'">编辑</a>&nbsp;';	
+						html += '<a href="'+__URL('ADMIN_MAIN/promotion/updateyifen?discount_id=' + data["data"][i]["discount_id"])+'">编辑</a>&nbsp;';
 					}if(data['data'][i]['status'] == 1){
 						html += '<a href="javascript:void(0);"onclick="closeDiscount('+data["data"][i]["discount_id"]+')">关闭</a>&nbsp;';
 					}else if(data['data'][i]['status'] == 3){
@@ -151,12 +151,12 @@ function searchData(){
 function delDiscount(discount_id){
 	$.ajax({
 		type:"post",
-		url : "{:__URL('ADMIN_MAIN/promotion/deldiscount')}",
+		url : "{:__URL('ADMIN_MAIN/promotion/delyifen')}",
 		data : { "discount_id" : discount_id.toString() },
 		dataType : "json",
 		success : function(data) {
 			if (data["code"] > 0) {
-				showMessage('success', data["message"],"{:__URL('ADMIN_MAIN/promotion/getdiscountlist')}");
+				showMessage('success', data["message"],"{:__URL('ADMIN_MAIN/promotion/getyifenlist')}");
 			}else if(data["code"] == -1){
 				showMessage('error', '正在进行中的活动不可删除！');
 			}else{
@@ -170,11 +170,11 @@ function delDiscount(discount_id){
 function closeDiscount(discount_id){
 	$.ajax({
 		type:"post",
-		url : "{:__URL('ADMIN_MAIN/promotion/closediscount')}",
+		url : "{:__URL('ADMIN_MAIN/promotion/closeyifen')}",
 		data : { "discount_id" : discount_id },
 		success : function(data) {
 			if (data["code"] > 0) {
-				showMessage('success', data["message"],"{:__URL('ADMIN_MAIN/promotion/getdiscountlist')}");
+				showMessage('success', data["message"],"{:__URL('ADMIN_MAIN/promotion/getyifenlist')}");
 			}else{
 				showMessage('error', data["message"]);
 			}
@@ -186,7 +186,7 @@ function discountInfo(discount_id){
 	$("#discountInfo").modal("show");
 	$.ajax({
 		type:"get",
-		url : "{:__URL('ADMIN_MAIN/promotion/getdiscountdetail')}",
+		url : "{:__URL('ADMIN_MAIN/promotion/getyifendetail')}",
 		data : { "discount_id" : discount_id },
 		success : function(data) {
 			$("#discount_name").text(data["discount_name"]);

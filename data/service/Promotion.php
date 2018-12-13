@@ -37,6 +37,8 @@ use data\model\NsPromotionGiftModel;
 use data\model\NsPromotionMansongGoodsModel;
 use data\model\NsPromotionMansongModel;
 use data\model\NsPromotionMansongRuleModel;
+use data\model\NsPromotionYifenGoodsModel;
+use data\model\NsPromotionYifenModel;
 use data\service\BaseService as BaseService;
 use data\service\promotion\GoodsDiscount;
 use data\service\promotion\GoodsSeckill;
@@ -1149,6 +1151,68 @@ class Promotion extends BaseService implements IPromotion
             return $e->getMessage();
         }
     }
+    public function addPromotionYifen($discount_name, $start_time, $end_time, $remark, $goods_id_array, $decimal_reservation_number)
+    {
+        $promotion_discount = new NsPromotionYifenModel();
+        $promotion_discount->startTrans();
+        try {
+
+            $shop_name = $this->instance_name;
+            $data = array(
+                'discount_name' => $discount_name,
+                'start_time' => getTimeTurnTimeStamp($start_time),
+                'end_time' => getTimeTurnTimeStamp($end_time),
+                'shop_id' => $this->instance_id,
+                'shop_name' => $shop_name,
+                'status' => 0,
+                'remark' => $remark,
+                'create_time' => time(),
+                'decimal_reservation_number' => $decimal_reservation_number
+            );
+            $promotion_discount->save($data);
+            $discount_id = $promotion_discount->discount_id;
+            $this->addUserLog($this->uid, 1, '营销', '一分抽奖', '添加一分抽奖：'.$discount_name);
+            $goods_id_array = explode(',', $goods_id_array);
+            $promotion_discount_goods = new NsPromotionYifenGoodsModel();
+            $promotion_discount_goods->destroy([
+                'discount_id' => $discount_id
+            ]);
+            foreach ($goods_id_array as $k => $v) {
+                // 添加检测考虑商品在一个时间段内只能有一种活动
+
+                $promotion_discount_goods = new NsPromotionYifenGoodsModel();
+                $discount_info = explode(':', $v);
+                $goods_discount = new GoodsDiscount();
+                $count = $goods_discount->getGoodsIsDiscount($discount_info[0], $start_time, $end_time);
+                // 查询商品名称图片
+                if ($count > 0) {
+                    $promotion_discount->rollback();
+                    return ACTIVE_REPRET;
+                }
+                $goods = new NsGoodsModel();
+                $goods_info = $goods->getInfo([
+                    'goods_id' => $discount_info[0]
+                ], 'goods_name,picture');
+                $data_goods = array(
+                    'discount_id' => $discount_id,
+                    'goods_id' => $discount_info[0],
+                    'discount' => $discount_info[1],
+                    'status' => 0,
+                    'start_time' => getTimeTurnTimeStamp($start_time),
+                    'end_time' => getTimeTurnTimeStamp($end_time),
+                    'goods_name' => $goods_info['goods_name'],
+                    'goods_picture' => $goods_info['picture'],
+                    'decimal_reservation_number' => $decimal_reservation_number
+                );
+                $promotion_discount_goods->save($data_goods);
+            }
+            $promotion_discount->commit();
+            return $discount_id;
+        } catch (\Exception $e) {
+            $promotion_discount->rollback();
+            return $e->getMessage();
+        }
+    }
 
     /**
      * (non-PHPdoc)
@@ -1184,6 +1248,73 @@ class Promotion extends BaseService implements IPromotion
             ]);
             foreach ($goods_id_array as $k => $v) {
                 $promotion_discount_goods = new NsPromotionDiscountGoodsModel();
+                $discount_info = explode(':', $v);
+                $goods_discount = new GoodsDiscount();
+                $count = $goods_discount->getGoodsIsDiscount($discount_info[0], $start_time, $end_time);
+                // 查询商品名称图片
+                if ($count > 0) {
+                    $promotion_discount->rollback();
+                    return ACTIVE_REPRET;
+                }
+                // 查询商品名称图片
+                $goods = new NsGoodsModel();
+                $goods_info = $goods->getInfo([
+                    'goods_id' => $discount_info[0]
+                ], 'goods_name,picture');
+                $data_goods = array(
+                    'discount_id' => $discount_id,
+                    'goods_id' => $discount_info[0],
+                    'discount' => $discount_info[1],
+                    'status' => 0,
+                    'start_time' => getTimeTurnTimeStamp($start_time),
+                    'end_time' => getTimeTurnTimeStamp($end_time),
+                    'goods_name' => $goods_info['goods_name'],
+                    'goods_picture' => $goods_info['picture'],
+                    'decimal_reservation_number' => $decimal_reservation_number
+                );
+                $promotion_discount_goods->save($data_goods);
+            }
+            $promotion_discount->commit();
+            return $discount_id;
+        } catch (\Exception $e) {
+            $promotion_discount->rollback();
+            return $e->getMessage();
+        }
+    }
+    /**
+     * (non-PHPdoc)
+     *
+     * @see \data\api\IPromote::updatePromotionDiscount()
+     */
+    public function updatePromotionYifen($discount_id, $discount_name, $start_time, $end_time, $remark, $goods_id_array, $decimal_reservation_number)
+    {
+        $promotion_discount = new NsPromotionYifenModel();
+        $promotion_discount->startTrans();
+        try {
+
+            $shop_name = $this->instance_name;
+            $data = array(
+                'discount_name' => $discount_name,
+                'start_time' => getTimeTurnTimeStamp($start_time),
+                'end_time' => getTimeTurnTimeStamp($end_time),
+                'shop_id' => $this->instance_id,
+                'shop_name' => $shop_name,
+                'status' => 0,
+                'remark' => $remark,
+                'create_time' => time(),
+                'decimal_reservation_number' => $decimal_reservation_number
+            );
+            $promotion_discount->save($data, [
+                'discount_id' => $discount_id
+            ]);
+            $this->addUserLog($this->uid, 1, '营销', '一分抽奖', '修改一分抽奖：'.$discount_name);
+            $goods_id_array = explode(',', $goods_id_array);
+            $promotion_discount_goods = new NsPromotionYifenGoodsModel();
+            $promotion_discount_goods->destroy([
+                'discount_id' => $discount_id
+            ]);
+            foreach ($goods_id_array as $k => $v) {
+                $promotion_discount_goods = new NsPromotionYifenGoodsModel();
                 $discount_info = explode(':', $v);
                 $goods_discount = new GoodsDiscount();
                 $count = $goods_discount->getGoodsIsDiscount($discount_info[0], $start_time, $end_time);
@@ -1354,6 +1485,69 @@ class Promotion extends BaseService implements IPromotion
         }
     }
 
+    public function closePromotionYifen($discount_id)
+    {
+        $promotion_discount = new NsPromotionYifenModel();
+        $promotion_discount->startTrans();
+        try {
+            $retval = $promotion_discount->save([
+                'status' => 3
+            ], [
+                'discount_id' => $discount_id
+            ]);
+            if ($retval == 1) {
+                $goods = new NsGoodsModel();
+
+                $data_goods = array(
+                    'promotion_type' => 2,
+                    'promote_id' => $discount_id
+                );
+                $goods_id_list = $goods->getQuery($data_goods, 'goods_id', '');
+                if (! empty($goods_id_list)) {
+
+                    foreach ($goods_id_list as $k => $goods_id) {
+                        $goods_info = $goods->getInfo([
+                            'goods_id' => $goods_id['goods_id']
+                        ], 'promotion_type,price');
+                        $goods->save([
+                            'promotion_price' => $goods_info['price']
+                        ], [
+                            'goods_id' => $goods_id['goods_id']
+                        ]);
+                        $goods_sku = new NsGoodsSkuModel();
+                        $goods_sku_list = $goods_sku->getQuery([
+                            'goods_id' => $goods_id['goods_id']
+                        ], 'price,sku_id', '');
+                        foreach ($goods_sku_list as $k_sku => $sku) {
+                            $goods_sku = new NsGoodsSkuModel();
+                            $data_goods_sku = array(
+                                'promote_price' => $sku['price']
+                            );
+                            $goods_sku->save($data_goods_sku, [
+                                'sku_id' => $sku['sku_id']
+                            ]);
+                        }
+                    }
+                }
+                $goods->save([
+                    'promotion_type' => 0,
+                    'promote_id' => 0
+                ], $data_goods);
+                $promotion_discount_goods = new NsPromotionYifenGoodsModel();
+                $retval = $promotion_discount_goods->save([
+                    'status' => 3
+                ], [
+                    'discount_id' => $discount_id
+                ]);
+            }
+            $promotion_discount->commit();
+            return $retval;
+        } catch (\Exception $e) {
+            $promotion_discount->rollback();
+            return $e->getMessage();
+        }
+    }
+
 
     /**
      * (non-PHPdoc)
@@ -1431,6 +1625,16 @@ class Promotion extends BaseService implements IPromotion
     public function getPromotionDiscountList($page_index = 1, $page_size = 0, $condition = '', $order = 'create_time desc')
     {
         $promotion_discount = new NsPromotionDiscountModel();
+        $list = $promotion_discount->pageQuery($page_index, $page_size, $condition, $order, '*');
+        foreach($list['data'] as $v ){
+
+        }
+        return $list;
+    }
+
+    public function getPromotionyifenList($page_index = 1, $page_size = 0, $condition = '', $order = 'create_time desc')
+    {
+        $promotion_discount = new NsPromotionYifenModel();
         $list = $promotion_discount->pageQuery($page_index, $page_size, $condition, $order, '*');
         foreach($list['data'] as $v ){
 
@@ -1521,6 +1725,35 @@ class Promotion extends BaseService implements IPromotion
         return $promotion_detail;
     }
 
+    public function getPromotionYifenDetail($discount_id)
+    {
+        $promotion_discount = new NsPromotionYifenModel();
+        $promotion_detail = $promotion_discount->get($discount_id);
+        $promotion_discount_goods = new NsPromotionYifenGoodsModel();
+        $promotion_goods_list = $promotion_discount_goods->getQuery([
+            'discount_id' => $discount_id
+        ], '*', '');
+        if (! empty($promotion_goods_list)) {
+            foreach ($promotion_goods_list as $k => $v) {
+                $goods = new NsGoodsModel();
+                $goods_info = $goods->getInfo([
+                    'goods_id' => $v['goods_id']
+                ], 'price, stock');
+                $picture = new AlbumPictureModel();
+                $pic_info = array();
+                $pic_info['pic_cover'] = '';
+                if (! empty($v['goods_picture'])) {
+                    $pic_info = $picture->get($v['goods_picture']);
+                }
+                $v['picture_info'] = $pic_info;
+                $v['price'] = $goods_info['price'];
+                $v['stock'] = $goods_info['stock'];
+            }
+        }
+        $promotion_detail['goods_list'] = $promotion_goods_list;
+        return $promotion_detail;
+    }
+
     /**
      *
      * @ERROR!!!
@@ -1531,6 +1764,32 @@ class Promotion extends BaseService implements IPromotion
     {
         $promotion_discount = new NsPromotionDiscountModel();
         $promotion_discount_goods = new NsPromotionDiscountGoodsModel();
+        $promotion_discount->startTrans();
+        try {
+            $discount_id_array = explode(',', $discount_id);
+            foreach ($discount_id_array as $k => $v) {
+                $promotion_detail = $promotion_discount->get($discount_id);
+                if ($promotion_detail['status'] == 1) {
+                    $promotion_discount->rollback();
+                    return - 1;
+                }
+                $promotion_discount->destroy($v);
+                $promotion_discount_goods->destroy([
+                    'discount_id' => $v
+                ]);
+            }
+            $promotion_discount->commit();
+            return 1;
+        } catch (\Exception $e) {
+            $promotion_discount->rollback();
+            return $e->getMessage();
+        }
+    }
+
+    public function delPromotionYifen($discount_id)
+    {
+        $promotion_discount = new NsPromotionYifenModel();
+        $promotion_discount_goods = new NsPromotionYifenGoodsModel();
         $promotion_discount->startTrans();
         try {
             $discount_id_array = explode(',', $discount_id);

@@ -829,6 +829,78 @@ class Promotion extends BaseController
         return view($this->style . "Promotion/getyifenList");
     }
 
+
+    /**
+     * 添加限时折扣
+     */
+    public function addYifen()
+    {
+        if (request()->isAjax()) {
+            $discount = new PromotionService();
+            $discount_name = request()->post('discount_name', '');
+            $start_time = request()->post('start_time', '');
+            $end_time = request()->post('end_time', '');
+            $remark = '';
+            $goods_id_array = request()->post('goods_id_array', '');
+            $decimal_reservation_number = request()->post("decimal_reservation_number", -1);
+
+            $retval = $discount->addPromotionYifen($discount_name, $start_time, $end_time, $remark, $goods_id_array, $decimal_reservation_number);
+            return AjaxReturn($retval);
+        }
+        return view($this->style . "Promotion/addYifen");
+    }
+
+
+
+    /**
+     * 修改限时折扣
+     */
+    public function updateYifen()
+    {
+        if (request()->isAjax()) {
+            $discount = new PromotionService();
+            $discount_id = request()->post('discount_id', '');
+            $discount_name = request()->post('discount_name', '');
+            $start_time = request()->post('start_time', '');
+            $end_time = request()->post('end_time', '');
+            $remark = '';
+            $goods_id_array = request()->post('goods_id_array', '');
+            $decimal_reservation_number = request()->post("decimal_reservation_number", -1);
+            $retval = $discount->updatePromotionYifen($discount_id, $discount_name, $start_time, $end_time, $remark, $goods_id_array, $decimal_reservation_number);
+            return AjaxReturn($retval);
+        }
+        $info = $this->getYifenDetail();
+        if (! empty($info['goods_list'])) {
+            foreach ($info['goods_list'] as $k => $v) {
+                $goods_id_array[] = $v['goods_id'];
+                $selected_data[$v['goods_id']] = $v['discount'];
+            }
+        }
+        //选择商品的id
+        $goods_id_array = join(',',$goods_id_array);
+        $info['goods_id_array'] = $goods_id_array;
+        //包含折扣的选择商品数据
+        $selected_data = json_encode($selected_data);
+        $this->assign('selected_data',$selected_data);
+
+        $this->assign("info", $info);
+        return view($this->style . "Promotion/updateYifen");
+    }
+
+    /**
+     * 获取限时折扣详情
+     */
+    public function getYifenDetail()
+    {
+        $discount_id = request()->get('discount_id', '');
+        if (! is_numeric($discount_id)) {
+            $this->error("没有获取到折扣信息");
+        }
+        $discount = new PromotionService();
+        $detail = $discount->getPromotionYifenDetail($discount_id);
+        return $detail;
+    }
+
     /**
      * 获取限时折扣；列表
      */
@@ -991,6 +1063,17 @@ class Promotion extends BaseController
         return AjaxReturn($res);
     }
 
+    public function delYifen()
+    {
+        $discount_id = request()->post('discount_id', '');
+        if (empty($discount_id)) {
+            $this->error("没有获取到折扣信息");
+        }
+        $discount = new PromotionService();
+        $res = $discount->delPromotionYifen($discount_id);
+        return AjaxReturn($res);
+    }
+
     /**
      * 关闭正在进行的限时秒杀
      */
@@ -1030,6 +1113,16 @@ class Promotion extends BaseController
         }
         $discount = new PromotionService();
         $res = $discount->closePromotionDiscount($discount_id);
+        return AjaxReturn($res);
+    }
+    public function closeYifen()
+    {
+        $discount_id = request()->post('discount_id', '');
+        if (! is_numeric($discount_id)) {
+            $this->error("没有获取到折扣信息");
+        }
+        $discount = new PromotionService();
+        $res = $discount->closePromotionYifen($discount_id);
         return AjaxReturn($res);
     }
 
