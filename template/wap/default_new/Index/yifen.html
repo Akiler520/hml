@@ -85,10 +85,10 @@ function showCategorySecond(obj,category_id,page){
 						if(item.picture != null){
 							img = item.picture.pic_cover_small;
 						}
-						
+
 						list_html+='<li>'
 							+'<div class="p-img">'
-							+'<a href="'+__URL('APP_MAIN/goods/goodsdetail?type=5&id='+item.goods_id)+'" title="'+item.goods_name+'">'
+							+'<a href="'+__URL('APP_MAIN/goods/goodsdetail?type=5&group_id='+item.discount_id+'&id='+item.goods_id)+'" title="'+item.goods_name+'">'
 							//"{:__IMG($default_goods_img)}"
 							+'<img src="'+ __IMG(img) +'" class="lazy_load" data-original="'+__IMG(img)+'">'
 							+'</a>'

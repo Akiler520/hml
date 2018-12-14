@@ -19,6 +19,9 @@ namespace data\service;
 /**
  * 统一支付接口服务层
  */
+use data\model\NsOrderGoodsModel;
+use data\model\NsPromotionYifenGoodsModel;
+use data\model\NsPromotionYifenModel;
 use data\service\BaseService as BaseService;
 use data\api\IUnifyPay;
 use data\model\NsOrderPaymentModel;
@@ -201,6 +204,31 @@ class UnifyPay extends BaseService implements IUnifyPay
                 default:
                     break;
             }
+
+            // TODO: 如果是一分抽奖的订单，则记录活动的销售量
+            /*$order_info = $ns_order->getInfo(['out_trade_no' => $out_trade_no]);
+
+            if ($order_info && $order_info['order_type'] == 5) {
+                $ns_order_goods = new NsOrderGoodsModel();
+                $goods_info = $ns_order_goods->getInfo(['order_id' => $order_info['order_id']]);
+
+                if ($goods_info) {
+                    $promotion_yifen_goods = new NsPromotionYifenGoodsModel();
+                    $promotion_yifen = new NsPromotionYifenModel();
+                    $p_goods_info = $promotion_yifen_goods->getInfo(['goods_id' => $goods_info['goods_id']]);
+
+                    if ($p_goods_info) {
+                        $yifen_info = $promotion_yifen->getInfo(['discount_id' => $p_goods_info['discount_id']]);
+
+                        if ($yifen_info) {
+                            $promotion_yifen->save(['num_sold' => $yifen_info['num_sold'] + 1], ['discount_id' => $p_goods_info['discount_id']]);
+                        }
+                    }
+
+                }
+            }*/
+
+
             return 1;
         }catch(\Exception $e)
         {

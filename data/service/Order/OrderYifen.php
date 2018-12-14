@@ -265,7 +265,8 @@ class OrderYifen extends Order
                 "give_point_type" => $give_point_type,
                 'shipping_company_id' => $shipping_company_id,
                 'fixed_telephone' => $fixed_telephone, // 固定电话
-                'tuangou_group_id' => $tuangou_group_id
+                'tuangou_group_id' => 0,
+                'yifen_id'     => $tuangou_group_id
             ); // datetime NOT NULL DEFAULT 'CURRENT_TIMESTAMP' COMMENT '订单创建时间',
             if ($pay_status == 2) {
                 $data_order["pay_time"] = time();

@@ -26,6 +26,7 @@ use data\model\NsCouponModel as NsCouponModel;
 use data\model\NsCouponTypeModel as NsCouponTypeModel;
 use data\model\NsGoodsModel;
 use data\model\NsGoodsSkuModel;
+use data\model\NsMemberModel;
 use data\model\NsPointConfigModel;
 use data\model\NsPromotionDiscountGoodsModel;
 use data\model\NsPromotionDiscountModel;
@@ -1635,9 +1636,25 @@ class Promotion extends BaseService implements IPromotion
     public function getPromotionyifenList($page_index = 1, $page_size = 0, $condition = '', $order = 'create_time desc')
     {
         $promotion_discount = new NsPromotionYifenModel();
-        $list = $promotion_discount->pageQuery($page_index, $page_size, $condition, $order, '*');
-        foreach($list['data'] as $v ){
+        $orderObj = new NsOrderModel();
 
+        $list = $promotion_discount->pageQuery($page_index, $page_size, $condition, $order, '*');
+        foreach($list['data'] as &$datum ){
+            $datum['win_user'] = "未开奖";
+            if ($datum['win_user_id'] > 0) {
+                // 获取中奖用户名称+ID
+                $member = new NsMemberModel();
+                $userInfo = $member->getInfo(['uid'=> $datum['win_user_id']]);
+
+                $datum['win_user'] = $userInfo['member_name'];
+            }
+
+            // 重新计算销售数量，已经支付完成的订单数量
+            $num = $orderObj->getCount(["yifen_id" => $datum['discount_id'], 'pay_status' => 2]);
+
+            if ($num > $datum['num_sold']) $promotion_discount->save(['num_sold' => $num], ['discount_id' => $datum['discount_id']]);
+
+            $datum['num_sold'] = $num;
         }
         return $list;
     }
@@ -1810,6 +1827,33 @@ class Promotion extends BaseService implements IPromotion
             $promotion_discount->rollback();
             return $e->getMessage();
         }
+    }
+
+    public function winPromotionYifen($discount_id)
+    {
+        $promotion_discount = new NsPromotionYifenModel();
+        $promotion_discount_goods = new NsPromotionYifenGoodsModel();
+
+        $order = new NsOrderModel();
+
+        // 获取已经支付完成的订单
+
+        $list = $order->where(['yifen_id' => $discount_id, 'pay_status'=>2])
+            ->limit(0, 1000000)
+            ->field("buyer_id")
+            ->select()
+            ;
+
+        if ($list) {
+            $userIDs = array_column($list, 'buyer_id');
+
+            $winID = $userIDs[mt_rand(1, count($userIDs))-1];
+
+            $promotion_discount->save(['win_user_id' => $winID, 'status' => 5], ['discount_id' => $discount_id]);
+
+        }
+
+        return 1;
     }
 
 

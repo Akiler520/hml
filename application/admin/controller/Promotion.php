@@ -791,7 +791,7 @@ class Promotion extends BaseController
             } else {
                 $list = $discount->getPromotionyifenList($page_index, $page_size, $condition);
             }
-            
+
             return $list;
         }
         
@@ -848,6 +848,26 @@ class Promotion extends BaseController
             return AjaxReturn($retval);
         }
         return view($this->style . "Promotion/addYifen");
+    }
+
+    /**
+     * 一分抽奖 - 开奖了
+     * @return \multitype|\think\response\View
+     */
+    public function winyifen()
+    {
+        if (request()->isAjax()) {
+            $discount = new PromotionService();
+            $discountID = request()->post('discount_id', '');
+
+            if ($discountID <= 0) {
+                return AjaxReturn("活动ID错误");
+            }
+            $retval = $discount->winPromotionYifen($discountID);
+
+            return AjaxReturn($retval);
+        }
+        return view($this->style . "Promotion/getYiFenList");
     }
 
 

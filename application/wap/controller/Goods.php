@@ -66,7 +66,7 @@ class Goods extends BaseController
         
         $web_info = $this->web_site->getWebSiteInfo();
         $group_id = request()->get("group_id", 0);
-        
+
         // 切换到PC端
         if (! request()->isMobile() && $web_info['web_status'] == 1) {
             $redirect = __URL(__URL__ . "/goods/goodsinfo?goodsid=" . $goods_id);
@@ -244,6 +244,7 @@ class Goods extends BaseController
         if (empty($goods_detail["wap_custom_template"])) {
             if ($type == 5) {
                 // 一分抽奖
+                $this->assign("group_id", $group_id);
                 return view($this->style . 'Goods/goodsYifenDetail');
             }
         	$is_support_pintuan = IS_SUPPORT_PINTUAN;

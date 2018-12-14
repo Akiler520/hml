@@ -461,6 +461,9 @@
 		{if $order_tag eq 'pintuan' }
 		<input type="hidden" id="hidden_order_tuangou_group_id" value="{$order_tuangou_group_id}" />
 		{/if}
+		{if $order_tag eq 'yifen' }
+		<input type="hidden" id="hidden_order_tuangou_group_id" value="{$order_tuangou_group_id}" />
+		{/if}
 		<input type="hidden" id="hidden_o2o_distribution" value="{$o2o_distribution}"/>
 		<!-- 积分抵现 -->
 		<input type="hidden" id="integral_balance_is_open" value="{$point_config.is_open}">

@@ -23,7 +23,9 @@
 <table class="table-class">
 	<colgroup>
 	<col style="width: 2%;">
-	<col style="width: 54%;">
+	<col style="width: 34%;">
+	<col style="width: 8%;">
+	<col style="width: 8%;">
 	<col style="width: 8%;">
 	<col style="width: 20%;">
 	<col style="width: 16%;">
@@ -33,6 +35,8 @@
 			<th><i class="checkbox-common"><input type="checkbox" onclick="CheckAll(this)"></i></th>
 			<th align="left">活动名称</th>
 			<th>活动状态</th>
+			<th>销售量</th>
+			<th>中奖者</th>
 			<th>有效时间</th>
 			<th>操作</th>
 		</tr>
@@ -106,6 +110,9 @@ function LoadingInfo(page_index) {
 					case 4:
 						var status_name = '已结束';
 						break;
+					case 5:
+						var status_name = '已开奖';
+						break;
 					}
 					html += '<tr align="center">';
 					html += '<td><div class="cell">';
@@ -117,15 +124,22 @@ function LoadingInfo(page_index) {
 					html += '<td align="left">' + data["data"][i]["discount_name"] + '</td>';;
 					
 					html += '<td>'+ status_name +'</td>';
+					html += '<td>'+ data["data"][i]["num_sold"] +'</td>';
+					html += '<td>'+ data["data"][i]["win_user"] +'</td>';
+
 					html += '<td>开始时间：' + timeStampTurnTime(data["data"][i]["start_time"]) + '<br/>结束时间：' + timeStampTurnTime(data["data"][i]["end_time"]) + '</td>';
 					html += '<td>';
-					if(data['data'][i]['status'] != 1){
+					if(data['data'][i]['status'] == 0){
 						html += '<a href="'+__URL('ADMIN_MAIN/promotion/updateyifen?discount_id=' + data["data"][i]["discount_id"])+'">编辑</a>&nbsp;';
-					}if(data['data'][i]['status'] == 1){
+					}
+
+					if(data['data'][i]['status'] == 1){
 						html += '<a href="javascript:void(0);"onclick="closeDiscount('+data["data"][i]["discount_id"]+')">关闭</a>&nbsp;';
 					}else if(data['data'][i]['status'] == 3){
 						html += '<a href="javascript:void(0);"onclick="delDiscount('+data["data"][i]["discount_id"]+')">删除</a>&nbsp;';
 					}else if(data['data'][i]['status'] == 4){
+						html += '<a href="javascript:void(0);"onclick="winDiscount('+data["data"][i]["discount_id"]+')">开奖</a>&nbsp;';
+					}else if(data['data'][i]['status'] == 5){
 						html += '<a href="javascript:void(0);"onclick="delDiscount('+data["data"][i]["discount_id"]+')">删除</a>&nbsp;';
 					}
 					html += '<a href="javascript:void(0);"onclick="discountInfo('+data["data"][i]["discount_id"]+')">详情</a>&nbsp;';
@@ -171,6 +185,22 @@ function closeDiscount(discount_id){
 	$.ajax({
 		type:"post",
 		url : "{:__URL('ADMIN_MAIN/promotion/closeyifen')}",
+		data : { "discount_id" : discount_id },
+		success : function(data) {
+			if (data["code"] > 0) {
+				showMessage('success', data["message"],"{:__URL('ADMIN_MAIN/promotion/getyifenlist')}");
+			}else{
+				showMessage('error', data["message"]);
+			}
+		}
+	})
+}
+
+//开奖
+function winDiscount(discount_id){
+	$.ajax({
+		type:"post",
+		url : "{:__URL('ADMIN_MAIN/promotion/winyifen')}",
 		data : { "discount_id" : discount_id },
 		success : function(data) {
 			if (data["code"] > 0) {

@@ -123,7 +123,7 @@
 			{volist name="yifen_list" id="vo" key = "k"}
 				{if $k < 3}
 					<li>
-						<a href="{:__URL('APP_MAIN/goods/goodsdetail?type=5&id='.$vo['goods_id'])}">
+						<a href="{:__URL('APP_MAIN/goods/goodsdetail?type=5&group_id='.$vo['discount_id'].'&id='.$vo['goods_id'])}">
 							<div class="goods_info">
 								<p class="discount-title">一分抽奖</p>
 
