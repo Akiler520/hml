@@ -51,6 +51,8 @@ class Goods extends BaseController
     {
 
         $goods_id = request()->get('id', 0);
+        $type = request()->get('type', 0);  // 活动类型：5=一分抽奖
+
         $bargain_id = request()->get('bargain_id', 0);
         if ($goods_id == 0) {
             $this->error("没有获取到商品信息");
@@ -240,6 +242,10 @@ class Goods extends BaseController
         
         // 判断当前商品是否有拼团
         if (empty($goods_detail["wap_custom_template"])) {
+            if ($type == 5) {
+                // 一分抽奖
+                return view($this->style . 'Goods/goodsYifenDetail');
+            }
         	$is_support_pintuan = IS_SUPPORT_PINTUAN;
         	$is_support_bargin = IS_SUPPORT_BARGAIN;
         	

@@ -86,7 +86,14 @@ class Index extends BaseController
         // 首页楼层版块
         $block_list = $good_category->getGoodsCategoryBlockQuery($shop_id, $this->category_good_num);
         $this->assign('block_list', $block_list);
-        
+
+        // 一分抽奖列表
+        $condition['status'] = 1;
+        $condition['ng.state'] = 1;
+        $yifen_list = $goods->getYifenGoodsList(1, 2, $condition, 'end_time');
+
+        $this->assign('yifen_list', $yifen_list['data']);
+
         // 限时折扣列表
         $condition['status'] = 1;
         $condition['ng.state'] = 1;
@@ -232,6 +239,46 @@ class Index extends BaseController
             $this->assign('goods_category_list_1', $goods_category_list_1['data']);
             $this->assign("title_before", "限时折扣");
             return view($this->style . 'Index/discount');
+        }
+    }
+    /**
+     * 一分抽奖
+     */
+    public function yifen()
+    {
+        $platform = new Platform();
+        // 限时折扣广告位
+        $discounts_adv = $platform->getPlatformAdvPositionDetail(1163);
+        $this->assign('discounts_adv', $discounts_adv);
+        if (request()->isAjax()) {
+            $goods = new Goods();
+            $category_id = request()->get('category_id', '0');
+            $page_index = request()->get("page", 1);
+            $condition['status'] = 1;
+            $condition['ng.state'] = 1;
+            if (! empty($category_id)) {
+                $condition['category_id_1'] = $category_id;
+            }
+            $discount_list = $goods->getYifenGoodsList($page_index, PAGESIZE, $condition, "ng.sort asc,ng.create_time desc");
+            foreach ($discount_list['data'] as $k => $v) {
+                $v['discount'] = str_replace('.00', '', $v['discount']);
+                $v['promotion_price'] = str_replace('.00', '', $v['promotion_price']);
+                $v['price'] = str_replace('.00', '', $v['price']);
+            }
+            return $discount_list;
+        } else {
+            $goods_category = new GoodsCategory();
+            $goods_category_list_1 = $goods_category->getGoodsCategoryList(1, 0, [
+                "is_visible" => 1,
+                "level" => 1
+            ]);
+
+            // 获取当前时间
+            $current_time = $this->getCurrentTime();
+            $this->assign('ms_time', $current_time);
+            $this->assign('goods_category_list_1', $goods_category_list_1['data']);
+            $this->assign("title_before", "一分抽奖");
+            return view($this->style . 'Index/yifen');
         }
     }
     

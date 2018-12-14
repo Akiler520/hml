@@ -113,6 +113,11 @@ i.shipping_fee{font-style: normal;font-size: 12px!important;;background: #fff;co
 	{/if}
 	<!-- <{include file="wap/default_new/Index/controlFigureAdv"/}> -->
 
+
+	{if condition="count($yifen_list) >0"}
+	{include file='wap/default_new/Index/controlYifen'/}
+	{/if}
+
 	{if condition="count($discount_list) >0"}
 	{include file='wap/default_new/Index/controlDiscount'/}
 	{/if}

@@ -372,7 +372,7 @@ function init(){
 		//循环小计
 		total_money += parseFloat($(this).attr('data-subtotal'));
 	})
-	
+
 	$(".js-total-money").text(total_money.toFixed(2));//总计
 	/**
 	 * 选中第一个配送方式对应的更新数据

@@ -55,6 +55,7 @@ use data\service\promotion\GoodsDiscount;
 use data\service\promotion\GoodsExpress;
 use data\service\promotion\GoodsMansong;
 use data\service\promotion\GoodsPreference;
+use data\service\promotion\GoodsYifen;
 use data\service\promotion\PromoteRewardRule;
 use data\service\GroupBuy as GroupBuyService;
 use think;
@@ -3087,6 +3088,13 @@ class Goods extends BaseService implements IGoods
     {
         $goods_discount = new GoodsDiscount();
         $goods_list = $goods_discount->getDiscountGoodsList($page_index, $page_size, $condition, $order);
+        return $goods_list;
+    }
+
+    public function getYifenGoodsList($page_index = 1, $page_size = 0, $condition = array(), $order = '')
+    {
+        $goods_discount = new GoodsYifen();
+        $goods_list = $goods_discount->getYifenGoodsList($page_index, $page_size, $condition, $order);
         return $goods_list;
     }
 

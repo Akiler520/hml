@@ -92,7 +92,7 @@ $(function() {
 									cart_detail.is_full_payment = 0;
 								}
 								var cart_tag = $("#submit_ok").attr("tag");
-								
+
 								//选择地址触发事件
 								if(address_tag == "address_tag"){
 									var skuid = $("#hiddSkuId").val();
@@ -175,6 +175,33 @@ $(function() {
 												data : { "tag" : "spelling", "sku_id" : skuid, "num" : num, "goods_type" : $("#hidden_goods_type").val(),"tuangou_group_id" : $("#hidden_tuangou_group_id").val() },
 												success : function(res){
 													window.location.href = __URL(APPMAIN+"/PintuanOrder/paymentorder");
+												}
+											});
+										}else{
+											showBox(purchase.message);
+										}
+									});
+								}else if(cart_tag == "yifen"){
+									//一分抽奖
+									//立即购买
+									var skuid = $("#hiddSkuId").val();
+									var num = 1;// 一次只买一个产品 $("#num").val();
+									//没有SKU商品，获取第一个
+									if(skuid == null || skuid == "") skuid = $("#goods_sku0").attr("skuid");
+									getGoodsPurchaseRestrictionForCurrentUser($("#goods_id").val(),num,function(purchase){
+										if(purchase.code>0){
+											$.ajax({
+												url : __URL(APPMAIN + "/YifenOrder/ordercreatesession"),
+												type : "post",
+												data : {
+													"tag" : "yifen",
+													"sku_id" : skuid,
+													"num" : num,
+													"goods_type" : $("#hidden_goods_type").val(),
+													"tuangou_group_id" : $("#hidden_tuangou_group_id").val()
+												},
+												success : function(res){
+													window.location.href = __URL(APPMAIN+"/YifenOrder/paymentorder");
 												}
 											});
 										}else{
@@ -291,7 +318,7 @@ $(function() {
 	});
 
 
-	$("#addCart,#buyBtn1,#spelling,#theSelected,#groupbuy,#js_point_exchange,#goods_presell,#bargainBtn").on("click",function(e) {
+	$("#addCart,#buyBtn1,#spelling,#yifen,#theSelected,#groupbuy,#js_point_exchange,#goods_presell,#bargainBtn").on("click",function(e) {
 
 		flag = parseInt($("#is_sale").val());
 		$(".motify").css("opacity",0);
@@ -340,7 +367,11 @@ $(function() {
 				$("#num").attr("max",1);
 				$("#submit_ok").text("下一步");
 
-			} 
+			} else if(tag_id == 'yifen'){
+				$("#num").attr("max",1);
+				$("#submit_ok").text("下一步");
+
+			}
 		} else {
 			showBox("该商品已下架","warning");
 		}
@@ -657,6 +688,10 @@ function echoSpecData(){
 				$("#hiddSkuprice").val(price);
 			}else if(active == "spelling"){
 				price = $this.attr("price");//$("#hidden_pintuan_price").val();
+				$("#price").text("￥" + price);
+				$("#hiddSkuprice").val(price);
+			}else if(active == "yifen"){
+				price = 0.01;//$this.attr("price");//$("#hidden_pintuan_price").val();
 				$("#price").text("￥" + price);
 				$("#hiddSkuprice").val(price);
 			}else if (active == "groupbuy") {

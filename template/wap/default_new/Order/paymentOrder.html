@@ -22,8 +22,8 @@
 		<input type="hidden" id="addressid" value="{$address_default.id}" />
 		<div class="js-order-address express-panel js-edit-address express-panel-edit">
 			<ul class="express-detail">
-				{if $order_tag eq 'pintuan'}
-				<a href="{:__URL('APP_MAIN/member/memberaddress?url=cart&flag=4')}">
+				{if $order_tag eq 'yifen'}
+				<a href="{:__URL('APP_MAIN/member/memberaddress?url=cart&flag=5')}">
 				{else/}
 				<a href="{:__URL('APP_MAIN/member/memberaddress?url=cart')}">
 				{/if}
@@ -39,8 +39,8 @@
 	{else /}
 	<div class="empty-address-tip">
 		<div id="noaddress">
-			{if $order_tag eq 'pintuan'}
-				<a href="{:__URL('APP_MAIN/member/memberaddress?url=cart&flag=4')}">
+			{if $order_tag eq 'yifen'}
+				<a href="{:__URL('APP_MAIN/member/memberaddress?url=cart&flag=5')}">
 			{else/}
 				<a href="{:__URL('APP_MAIN/member/memberaddress?url=cart')}">
 			{/if}
@@ -52,8 +52,8 @@
 
 <section class="order">
 	<!-- 创建订单：商品信息  立即购买和购物车商品信息一致 只有这两种方式有赠品 -->
-	{in name="order_tag" value="buy_now,cart,groupbuy,virtual_goods,combination_packages,pintuan,js_point_exchange,goods_presell"}
-		{in name="order_tag" value="buy_now,cart,groupbuy,virtual_goods,combination_packages,pintuan,goods_presell"}
+	{in name="order_tag" value="buy_now,cart,groupbuy,virtual_goods,combination_packages,pintuan,yifen,js_point_exchange,goods_presell"}
+		{in name="order_tag" value="buy_now,cart,groupbuy,virtual_goods,combination_packages,pintuan,yifen,goods_presell"}
 			{foreach name="itemlist" item="list"}
 				<div class="order-goods-item clearfix" data-subtotal="{$list.subtotal}">
 					<div class="name-card block-item">
@@ -688,6 +688,7 @@
 	{case value="combination_packages"}<script src="__TEMP__/{$style}/public/js/payment_combo_package_order.js"></script>{/case}
 	{case value="groupbuy"}<script src="__TEMP__/{$style}/public/js/payment_group_buy_order.js"></script>{/case}
 	{case value="pintuan"}<script src="__TEMP__/{$style}/public/js/payment_pintuan_order.js"></script>{/case}
+	{case value="yifen"}<script src="__TEMP__/{$style}/public/js/payment_yifen_order.js"></script>{/case}
 	{case value="goods_presell"}<script src="__TEMP__/{$style}/public/js/payment_presell_order.js"></script>{/case}
 	{case value="js_point_exchange"}
 		{if $order_goods_type eq 0}

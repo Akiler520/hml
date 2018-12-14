@@ -186,6 +186,7 @@ return [
     'goods_alone_purchase'			  => '单独购买',
     'goods_share'					  => '人拼单',
     'goods_start_share'				  => '发起拼单',
+    'goods_yifen_share'				  => '一分抽奖',
     'goods_join_share'				  => '参与拼单',
     'goods_add_cart'                  => '加入购物车',
     'goods_selected_condition'        => '已选条件',
