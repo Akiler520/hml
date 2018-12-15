@@ -137,6 +137,7 @@ function LoadingInfo(page_index) {
 						html += '<a href="javascript:void(0);"onclick="closeDiscount('+data["data"][i]["discount_id"]+')">关闭</a>&nbsp;';
 					}else if(data['data'][i]['status'] == 3){
 						html += '<a href="javascript:void(0);"onclick="delDiscount('+data["data"][i]["discount_id"]+')">删除</a>&nbsp;';
+                        html += '<a href="javascript:void(0);"onclick="winDiscount('+data["data"][i]["discount_id"]+')">开奖</a>&nbsp;';
 					}else if(data['data'][i]['status'] == 4){
 						html += '<a href="javascript:void(0);"onclick="winDiscount('+data["data"][i]["discount_id"]+')">开奖</a>&nbsp;';
 					}else if(data['data'][i]['status'] == 5){

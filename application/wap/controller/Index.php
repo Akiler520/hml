@@ -15,6 +15,7 @@
  */
 namespace app\wap\controller;
 
+use data\model\NsPromotionYifenModel;
 use data\service\Config;
 use data\service\Goods;
 use data\service\GoodsCategory;
@@ -88,13 +89,25 @@ class Index extends BaseController
         $this->assign('block_list', $block_list);
 
         // 一分抽奖列表
-        $condition['status'] = 1;
+        $condition = array();
+//        $condition['status'] = 1;
         $condition['ng.state'] = 1;
+        $promotionYifen = new  NsPromotionYifenModel();
+        $discountIDs = $promotionYifen->where(array("status" => 1))
+            ->field("discount_id")
+            ->limit(0, 1000000)
+            ->select();
+
+        if (!empty($discountIDs)) {
+            $condition['discount_id'] = array('in', array_column($discountIDs, 'discount_id'));
+        }
+
         $yifen_list = $goods->getYifenGoodsList(1, 2, $condition, 'end_time');
 
         $this->assign('yifen_list', $yifen_list['data']);
 
         // 限时折扣列表
+        $condition = array();
         $condition['status'] = 1;
         $condition['ng.state'] = 1;
         $discount_list = $goods->getDiscountGoodsList(1, 2, $condition, 'end_time');
@@ -252,13 +265,21 @@ class Index extends BaseController
         $this->assign('discounts_adv', $discounts_adv);
         if (request()->isAjax()) {
             $goods = new Goods();
-            $category_id = request()->get('category_id', '0');
+            $promotionYifen = new NsPromotionYifenModel();
+
             $page_index = request()->get("page", 1);
-            $condition['status'] = 1;
+//            $condition['status'] = 1;
             $condition['ng.state'] = 1;
-            if (! empty($category_id)) {
-                $condition['category_id_1'] = $category_id;
+
+            $discountIDs = $promotionYifen->where(array("status" => 1))
+                ->field("discount_id")
+                ->limit(0, 1000000)
+                ->select();
+
+            if (!empty($discountIDs)) {
+                $condition['discount_id'] = array('in', array_column($discountIDs, 'discount_id'));
             }
+
             $discount_list = $goods->getYifenGoodsList($page_index, PAGESIZE, $condition, "ng.sort asc,ng.create_time desc");
             foreach ($discount_list['data'] as $k => $v) {
                 $v['discount'] = str_replace('.00', '', $v['discount']);

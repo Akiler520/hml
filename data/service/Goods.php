@@ -3098,6 +3098,11 @@ class Goods extends BaseService implements IGoods
         return $goods_list;
     }
 
+    public function getYifenOnlineGoodsList($page_index = 1, $page_size = 0)
+    {
+
+    }
+
     /**
      * (non-PHPdoc)
      *

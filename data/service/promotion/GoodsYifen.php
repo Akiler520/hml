@@ -115,6 +115,8 @@ class GoodsYifen extends BaseService
                 $goods_list['data'][$k]['shop_credit'] = $shop_info['shop_credit'];
                 $picture_info = $picture->get($v['picture']);
                 $goods_list['data'][$k]['picture'] = $picture_info;
+                $goods_list['data'][$k]['promotion_price'] = 0.01;
+
                 if($v['point_exchange_type'] == 0 || $v['point_exchange_type'] == 2){
                     $goods_list['data'][$k]['display_price'] = '￥'.$v["promotion_price"];
                 }else{
