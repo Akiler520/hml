@@ -98,11 +98,14 @@ class Index extends BaseController
             ->limit(0, 1000000)
             ->select();
 
-        if (!empty($discountIDs)) {
-            $condition['discount_id'] = array('in', array_column($discountIDs, 'discount_id'));
-        }
+        $discountIDs = json_decode(json_encode($discountIDs), true);
 
-        $yifen_list = $goods->getYifenGoodsList(1, 2, $condition, 'end_time');
+        if ($discountIDs) {
+            $condition['discount_id'] = array('in', implode(',', array_column($discountIDs, 'discount_id')));
+            $yifen_list = $goods->getYifenGoodsList(1, 2, $condition, 'end_time');
+        } else {
+            $yifen_list['data'] = array();
+        }
 
         $this->assign('yifen_list', $yifen_list['data']);
 

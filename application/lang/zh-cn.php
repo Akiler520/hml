@@ -1447,6 +1447,7 @@ return [
     'spell_group_zone'                                                    => '拼团专区',
     'join_together'                                                       => '参与拼单',
     'spell_group_order'                                                   => '拼团订单',
+    'yifen_order'                                                         => '一分抽奖订单',
     'local_distribution'                                                  => '本地配送',
     
     'group_buy_area'                                                      => '团购专区',

@@ -355,7 +355,7 @@ class YifenOrder extends Order
             $status = request()->post('status', 'all');
             $condition['buyer_id'] = $this->uid;
             $condition['is_deleted'] = 0;
-            $condition['order_type'] = 4; // ("in", "4");
+            $condition['order_type'] = 5; // ("in", "4");
             if (! empty($this->shop_id)) {
                 $condition['shop_id'] = $this->shop_id;
             }
@@ -392,12 +392,12 @@ class YifenOrder extends Order
             }
             $page_index = request()->post("page", 1);
             // 还要考虑状态逻辑
-            $pintuan = new Pintuan();
+            $pintuan = new Yifen();
             $list = $pintuan->getOrderList($page_index, PAGESIZE, $condition, 'create_time desc');
             return $list;
         } else {
             $this->assign("status", $status);
-            return view($this->style . 'PintuanOrder/myOrderList');
+            return view($this->style . 'YifenOrder/myOrderList');
         }
     }
 

@@ -131,7 +131,7 @@
 								<span class="goods_price"><i>￥</i>{$vo.promotion_price}</span>
 							</div>
 							<div class="goods_pic">
-								<a href="{:__URL('APP_MAIN/goods/goodsdetail?id='.$vo['goods_id'])}">
+								<a href="{:__URL('APP_MAIN/goods/goodsdetail?type=5&group_id='.$vo['discount_id'].'&id='.$vo['goods_id'])}">
 									<img src="{:__IMG($default_goods_img)}" class="lazy_load" data-original="{:__IMG($vo['picture']['pic_cover_small'])}" alt="">
 								</a>
 							</div>
