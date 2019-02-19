@@ -15,6 +15,7 @@
  */
 namespace app\wap\controller;
 
+use data\extend\weixin\WxJssdk;
 use data\service\Config;
 use data\service\Member as MemberService;
 use data\service\Order;
@@ -104,7 +105,7 @@ class Pay extends Controller
         $pay_config = $pay->getPayConfig();
         $this->assign("pay_config", $pay_config);
         $pay_value = $pay->getPayInfo($out_trade_no);
-        
+
         if (empty($pay_value)) {
             $this->error("订单主体信息已发生变动!", __URL(__URL__ . "wap/member/index"));
         }
@@ -129,7 +130,8 @@ class Pay extends Controller
         } else {
             $this->assign('pay_value', $pay_value);
 
-            if (request()->isMobile() && strpos($_SERVER['HTTP_USER_AGENT'],'MicroMessenger') !== false) {
+            if (request()->isMobile()) {
+//            if (request()->isMobile() && strpos($_SERVER['HTTP_USER_AGENT'],'MicroMessenger') !== false) {
             	$this->user = new Member();
             	$this->shop_name = $this->user->getInstanceName();
             	$this->assign("platform_shopname", $this->shop_name); // 平台店铺名称
@@ -156,7 +158,12 @@ class Pay extends Controller
         $msg = request()->get('msg', ''); // 测试，-1：在其他浏览器中打开，1：成功，2：失败
         $this->assign("status", $msg);
         $order_no = $this->getOrderNoByOutTradeNo($out_trade_no);
+
+        $pay = new UnifyPay();
+        $goodsInfo = $pay->getPayGoods($out_trade_no);
+        $this->assign("goods_info", $goodsInfo);
         $this->assign("order_no", $order_no);
+
         if (request()->isMobile()) {
             return view($this->style . "Pay/payCallback");
         } else {
@@ -267,6 +274,10 @@ class Pay extends Controller
         $order = new Order();
         $goods_id = $order ->getGoodsId($out_trade_no);
         $this->assign("goods_id", $goods_id);
+
+        $pay = new UnifyPay();
+        $goodsInfo = $pay->getPayGoods($out_trade_no);
+        $this->assign("goods_info", $goodsInfo);
 
         if (request()->isMobile()) {
             return view($this->style . "Pay/payCallback");
@@ -677,6 +688,21 @@ class Pay extends Controller
     }
 
 
+   public function successShare()
+   {
+//       $goods_id = $_GET['goods_id'];
+
+       //获取token
+       $weixin_AppId="wx1572d1e6ec3b46c9";
+       $weixin_AppSecret="733ea23a79a573afb1f852a46db29223";
+
+       $WxShare = new WxJssdk($weixin_AppId, $weixin_AppSecret);
+
+       $signPackage = $WxShare->GetSignPackage();
+
+       echo json_encode(array("status"=>1, "message"=>"成功", "result"=>$signPackage));
+   }
+
    public function shareGoods()
     {
         $goods_id = $_GET['goods_id'];
@@ -750,7 +776,7 @@ class Pay extends Controller
 
     public function getToken($weixin_AppId,$weixin_AppSecret){
         $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=".$weixin_AppId."&secret=".$weixin_AppSecret;
-        $res =$this-> getData($url);
+        $res =$this->getData($url);
         $jres = json_decode($res,true);
         $token = $jres['access_token'];
         return $token;

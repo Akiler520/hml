@@ -263,6 +263,17 @@ class UnifyPay extends BaseService implements IUnifyPay
         $info = $pay->getInfo(['out_trade_no' => $out_trade_no], '*');
         return $info;
     }
+
+    public function getPayGoods($out_trade_no)
+    {
+        $orderGoods = new NsOrderGoodsModel();
+        $order = new NsOrderModel();
+
+        $orderInfo = $order->getInfo(['out_trade_no' => $out_trade_no], '*');
+        $info = $orderGoods->getInfo(['order_id' => $orderInfo['order_id']], '*');
+        return $info;
+    }
+
     /**
      * 重新设置编号，用于修改价格订单
      * @param unknown $out_trade_no

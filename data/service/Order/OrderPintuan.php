@@ -403,8 +403,9 @@ class OrderPintuan extends Order
             $goods_sku = explode(':', $goods_sku_array);
             $goods_sku_info = $ns_goods_sku->getInfo([
                 'sku_id' => $goods_sku[0]
-            ], 'pintuan_price');
-            $price += $goods_sku_info['pintuan_price'];//$this->getGoodsPintuanPrice($goods_sku_info['goods_id'], $goods_sku[1], $tuangou_group_id);
+            ], 'pintuan_price,goods_id');
+            $price += $goods_sku_info['pintuan_price'] * $goods_sku[1];//
+//            $price += $this->getGoodsPintuanPrice($goods_sku_info['goods_id'], $goods_sku[1], $tuangou_group_id);
         }
         return $price;
     }

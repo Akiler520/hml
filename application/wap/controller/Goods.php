@@ -90,7 +90,7 @@ class Goods extends BaseController
         
         // 是否是微信浏览器
         $this->assign("isWeixin", isWeixin());
-        
+
         // 把属性值相同的合并
         $goods_attribute_list = $goods_detail['goods_attribute_list'];
         $goods_attribute_list_new = array();
@@ -1610,6 +1610,41 @@ class Goods extends BaseController
             ]);
             $this->assign("groupList", $groupList["data"]);
             return view($this->style . 'Goods/promotionZone');
+        }
+    }
+
+    /**
+     * 标签商品列表
+     * @return \data\model\unknown|\think\response\View
+     */
+    public function labelGoods()
+    {
+        $group_id = request()->get("group_id", "3");
+
+        if (request()->isAjax()) {
+            $page_index = request()->get('page', '1');
+            $group_id = request()->get("group_id", "3");
+
+            $this->goods = new GoodsService();
+
+            if (! empty($group_id)) {
+                $condition = "FIND_IN_SET(" . $group_id . ",ng.group_id_array) AND ng.state = 1";
+            } else {
+                $condition['ng.group_id_array'] = array(
+                    'neq',
+                    0
+                );
+                $condition['ng.state'] = 1;
+            }
+
+            $goods_list = $this->goods->getGoodsList($page_index, PAGESIZE, $condition, "", $group_id);
+            return $goods_list;
+        } else {
+            $goods_group = new GoodsGroup();
+            $groupInfo = $goods_group->getGoodsGroupDetail($group_id);
+            $this->assign("title_before", $groupInfo->group_name);
+            $this->assign("group_id", $group_id);
+            return view($this->style . 'Goods/labelGoods');
         }
     }
 
