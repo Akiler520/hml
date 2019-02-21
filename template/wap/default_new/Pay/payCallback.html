@@ -119,21 +119,18 @@ function enterOrderList(){
 }
 
 function shareGoods() {
-    // $("#share_img").show();
+    $("#share_img").show();
     //
-    setTimeout(function () {
+    // setTimeout(function () {
         // location.href = $("#share_url").val();
         // $("#form_share").submit();
-    },2000);
+    // },2000);
 
     var  goods_id = $("#goods_id").val();
     var  goods_url = "{:__URL('APP_MAIN/goods/goodsdetail?id='.$goods_info['goods_id'])}";
     var  goods_name = $("#goods_name").val();
     var  introduction = $("#introduction").val();
     var  picture = $("#picture").val();
-
-
-
 
     $.ajax({
         type: "GET",
@@ -166,6 +163,8 @@ function shareGoods() {
                     imgUrl: picture, // 分享图标
                     success: function () {
                         alert("分享成功！");
+
+                        location.href = '{:__URL('APP_MAIN/member')}';
                     }
                 });
                 // 获取“分享给朋友”按钮点击状态及自定义分享内容接口
@@ -177,6 +176,8 @@ function shareGoods() {
                     // type: 'link',
                     success: function () {
                         alert("分享成功！");
+
+                        location.href = '{:__URL('APP_MAIN/member')}';
                     }
                 });
 
