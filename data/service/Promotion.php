@@ -1165,7 +1165,7 @@ class Promotion extends BaseService implements IPromotion
                 'end_time' => getTimeTurnTimeStamp($end_time),
                 'shop_id' => $this->instance_id,
                 'shop_name' => $shop_name,
-                'status' => 0,
+                'status' => 1,
                 'remark' => $remark,
                 'create_time' => time(),
                 'decimal_reservation_number' => $decimal_reservation_number

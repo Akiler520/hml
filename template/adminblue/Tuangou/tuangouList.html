@@ -452,12 +452,15 @@ function showUpdateGoodsPintuan(condition){
 			$("#tuangou_money").val(data.tuangou_money);
 			$("#tuangou_num").val(data.tuangou_num);
 			$("#tuangou_time").val(data.tuangou_time);
-			//json转对象
-			var tuangou_content_obj = JSON.parse(data.tuangou_content_json); 
-			$("#colonel_commission").val(tuangou_content_obj.colonel_commission);
-			$('#colonel_coupon').val(tuangou_content_obj.colonel_coupon);
-			$("#colonel_point").val(tuangou_content_obj.colonel_point);
-			$("#colonel_content").val(tuangou_content_obj.colonel_content);
+
+			if (typeof data.tuangou_content_json != 'undefined') {
+                //json转对象
+                var tuangou_content_obj = JSON.parse(data.tuangou_content_json);
+                $("#colonel_commission").val(tuangou_content_obj.colonel_commission);
+                $('#colonel_coupon').val(tuangou_content_obj.colonel_coupon);
+                $("#colonel_point").val(tuangou_content_obj.colonel_point);
+                $("#colonel_content").val(tuangou_content_obj.colonel_content);
+			}
 
 			// 初始化sku数据
 			var skuHtml = '';
