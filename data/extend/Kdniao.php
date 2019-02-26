@@ -26,7 +26,7 @@ class Kdniao{
             $this->appkey = $express_config["value"]["appkey"];
         }
         $this->request_type = 1002;
-        $this->request_url = 'http://api.kdniao.cc/Ebusiness/EbusinessOrderHandle.aspx';
+        $this->request_url = 'http://api.kdniao.com/Ebusiness/EbusinessOrderHandle.aspx';
     }
     
     
