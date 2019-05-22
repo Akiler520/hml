@@ -197,7 +197,8 @@ class Pay extends Controller
                     die();
                 }
                 
-                $this->redirect($res["mweb_url"]);
+//                $this->redirect($res["mweb_url"] . "&redirect_url=http://www.hmlsm.com/index.php?s=/wap/member/index");
+                $this->redirect($res["mweb_url"] . "&redirect_url=".__URL(__URL__ . "wap/member/index"));
             } else {
                 $res = $pay->wchatPay($out_trade_no, 'NATIVE', $red_url);
                 if ($res["return_code"] == "SUCCESS") {
@@ -280,7 +281,8 @@ class Pay extends Controller
         $goodsInfo = $pay->getPayGoods($out_trade_no);
         $this->assign("goods_info", $goodsInfo);
 
-        if (request()->isMobile() && strpos($_SERVER['HTTP_USER_AGENT'],'MicroMessenger') !== false) {
+//        if (request()->isMobile() && strpos($_SERVER['HTTP_USER_AGENT'],'MicroMessenger') !== false) {
+        if (request()->isMobile()) {
             return view($this->style . "Pay/payCallback");
         } else {
             return view($this->style . "Pay/payCallbackPc");
